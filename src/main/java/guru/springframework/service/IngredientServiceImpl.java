@@ -86,7 +86,8 @@ public class IngredientServiceImpl implements IngredientService{
 
         return ingredientToCommand.convert(
                 savedRecipe.getIngredients().stream().filter(
-                        ingredient -> ( ingredient.getRecipe().getId()==ingredientCommand.getRecipeId() &&
+                        ingredient -> (
+                                        //ingredient.getRecipe().getId()==ingredientCommand.getRecipeId() &&
                                         ingredient.getDescription()==ingredientCommand.getDescription() &&
                                         ingredient.getAmount()==ingredientCommand.getAmount() &&
                                         ingredient.getUom().getId()==ingredientCommand.getUom().getId()))
@@ -113,7 +114,7 @@ public class IngredientServiceImpl implements IngredientService{
         recipe.getIngredients().stream().filter(element->element.getId().equals(ingredientId)).findFirst().ifPresentOrElse(
                 //ingredient is an existing ingredient of recipe,remove it
                 (ingredient) -> {
-                    ingredient.setRecipe(null);
+                    //ingredient.setRecipe(null);
                     recipe.getIngredients().remove(ingredient);
                 },
                 //ingredient is not an existing ingredient, cannot delete

@@ -12,6 +12,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.util.Map.entry;
 
 @Slf4j
 @Component
@@ -22,13 +28,22 @@ public class BootStrapDataDefault implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
     private final UnitOfMeasureRepository unitOfMeasureRepository;
 
-    private UnitOfMeasure count;
-    private UnitOfMeasure teaspoon;
-    private UnitOfMeasure tablespoon;
-    private UnitOfMeasure pinch;
-    private UnitOfMeasure cup;
-    private UnitOfMeasure ounce;
-    private UnitOfMeasure pint;
+    Map<String, UnitOfMeasure >uomS = Map.ofEntries(
+            entry("",new UnitOfMeasure()),
+            entry("Teaspoon", new UnitOfMeasure()),
+            entry("Tablespoon", new UnitOfMeasure()),
+            entry("Pinch",new UnitOfMeasure()),
+            entry("Cup",new UnitOfMeasure()),
+            entry("Ounce",new UnitOfMeasure()),
+            entry("Pint",new UnitOfMeasure()),
+            entry("Dash",new UnitOfMeasure()));
+
+    Map<String, Category >categoryS = Map.ofEntries(
+            entry("American",new Category()),
+            entry("Italian",new Category()),
+            entry("Mexican",new Category()),
+            entry("Fast Food",new Category())
+    );
 
     public BootStrapDataDefault(RecipeRepository recipeRepository, CategoryRepository categoryRepository, UnitOfMeasureRepository unitOfMeasureRepository) {
         this.recipeRepository = recipeRepository;
@@ -36,17 +51,30 @@ public class BootStrapDataDefault implements CommandLineRunner {
         this.unitOfMeasureRepository = unitOfMeasureRepository;
     }
 
+    @Transactional
     private void initUOMs() {
-        this.count=unitOfMeasureRepository.findByDescription("").orElseThrow();
-        this.teaspoon=unitOfMeasureRepository.findByDescription("Teaspoon").orElseThrow();
-        this.tablespoon=unitOfMeasureRepository.findByDescription("Tablespoon").orElseThrow();
-        this.pinch=unitOfMeasureRepository.findByDescription("Pinch").orElseThrow();
-        this.cup=unitOfMeasureRepository.findByDescription("Cup").orElseThrow();
-        this.ounce=unitOfMeasureRepository.findByDescription("Ounce").orElseThrow();
-        this.pint=unitOfMeasureRepository.findByDescription("Pint").orElseThrow();
 
+        if (unitOfMeasureRepository.count() == 0) {
+            this.uomS.forEach((description, uomElement) -> {
+                uomElement.setDescription(description);
+                unitOfMeasureRepository.save(uomElement);
+            });
+        }
     }
 
+
+    @Transactional
+    private void initCategory() {
+
+        if (categoryRepository.count() == 0) {
+            categoryS.forEach((catDescription,category) -> {
+                category.setDescription(catDescription);
+                categoryRepository.save(category);
+            });
+        }
+    }
+
+    @Transactional
     private Recipe initGuacamole() {
 
         Recipe guacamole = new Recipe();
@@ -57,8 +85,8 @@ public class BootStrapDataDefault implements CommandLineRunner {
         guacamole.setPrepTime(10);
         guacamole.setServings(4);
         guacamole.setUrl("https://www.simplyrecipes.com/recipes/perfect_guacamole/");
-        guacamole.getCategories().add(categoryRepository.findByDescription("Mexican").orElseThrow());
-        guacamole.getCategories().add(categoryRepository.findByDescription("American").orElseThrow());
+        guacamole.getCategories().add(categoryS.get("Mexican"));
+        guacamole.getCategories().add(categoryS.get("American"));
 
         guacamole.setDirections("1 Cut avocado, remove flesh: Cut the avocados in half. Remove seed. Score the inside of the avocado with a blunt knife and scoop out the flesh with a spoon" +
                 "\n" +
@@ -78,20 +106,21 @@ public class BootStrapDataDefault implements CommandLineRunner {
         guacamole.setNotes(guacamoleNotes);
 
 
-        guacamole.addIngredient(new Ingredient("avocado",new BigDecimal("2.0"),count));
-        guacamole.addIngredient(new Ingredient("salt",new BigDecimal("0.25"),teaspoon));
-        guacamole.addIngredient(new Ingredient("fresh lime or lemon juice",new BigDecimal("1.0"),tablespoon));
-        guacamole.addIngredient(new Ingredient("minced red onion or thinly sliced green onion",new BigDecimal("4.0"),tablespoon));
-        guacamole.addIngredient(new Ingredient("serrano chilis, stems and seeds removed, minced",new BigDecimal("2.0"),count));
-        guacamole.addIngredient(new Ingredient("cilantro,finely chopped",new BigDecimal("2.0"),tablespoon));
-        guacamole.addIngredient(new Ingredient("freshly ground black pepper",new BigDecimal("1.0"),pinch));
-        guacamole.addIngredient(new Ingredient("ripe tomato, chopped",new BigDecimal("0.5"),count));
-        guacamole.addIngredient(new Ingredient("Red radish or jicama slices",BigDecimal.ZERO,count));
-        guacamole.addIngredient(new Ingredient("Tortilla chips",BigDecimal.ZERO,count));
+        guacamole.addIngredient(new Ingredient("avocado",new BigDecimal("2.0"),uomS.get("")));
+        guacamole.addIngredient(new Ingredient("salt",new BigDecimal("0.25"),uomS.get("Teaspoon")));
+        guacamole.addIngredient(new Ingredient("fresh lime or lemon juice",new BigDecimal("1.0"),uomS.get("Tablespoon")));
+        guacamole.addIngredient(new Ingredient("minced red onion or thinly sliced green onion",new BigDecimal("4.0"),uomS.get("Tablespoon")));
+        guacamole.addIngredient(new Ingredient("serrano chilis, stems and seeds removed, minced",new BigDecimal("2.0"),uomS.get("")));
+        guacamole.addIngredient(new Ingredient("cilantro,finely chopped",new BigDecimal("2.0"),uomS.get("Tablespoon")));
+        guacamole.addIngredient(new Ingredient("freshly ground black pepper",new BigDecimal("1.0"),uomS.get("Pinch")));
+        guacamole.addIngredient(new Ingredient("ripe tomato, chopped",new BigDecimal("0.5"),uomS.get("")));
+        guacamole.addIngredient(new Ingredient("Red radish or jicama slices",BigDecimal.ZERO,uomS.get("")));
+        guacamole.addIngredient(new Ingredient("Tortilla chips",BigDecimal.ZERO,uomS.get("")));
 
         return guacamole;
     }
 
+    @Transactional
     private Recipe initSpicyGCTacos() {
         Recipe spicyGCTacos = new Recipe();
 
@@ -101,8 +130,8 @@ public class BootStrapDataDefault implements CommandLineRunner {
         spicyGCTacos.setPrepTime(20);
         spicyGCTacos.setServings(6);
         spicyGCTacos.setUrl("https://www.simplyrecipes.com/recipes/spicy_grilled_chicken_tacos/");
-        spicyGCTacos.getCategories().add(categoryRepository.findByDescription("Mexican").orElseThrow());
-        spicyGCTacos.getCategories().add(categoryRepository.findByDescription("American").orElseThrow());
+        spicyGCTacos.getCategories().add(categoryS.get("Mexican"));
+        spicyGCTacos.getCategories().add(categoryS.get("American"));
 
         spicyGCTacos.setDirections("1 Prepare a gas or charcoal grill for medium-high, direct heat.\n" +
                                    "2 Make the marinade and coat the chicken: In a large bowl, stir together the chili powder, oregano, cumin, sugar, salt, garlic and orange zest. Stir in the orange juice and olive oil to make a loose paste. Add the chicken to the bowl and toss to coat all over.\n" +
@@ -123,30 +152,30 @@ public class BootStrapDataDefault implements CommandLineRunner {
         spicyGCTacos.setNotes(spicyGCTacosNotes);
 
 
-        spicyGCTacos.addIngredient(new Ingredient("ancho chili powder",new BigDecimal("2.0"),tablespoon));
-        spicyGCTacos.addIngredient(new Ingredient("dired oregano",new BigDecimal("1.0"),teaspoon));
-        spicyGCTacos.addIngredient(new Ingredient("dired cumin",new BigDecimal("1.0"),teaspoon));
-        spicyGCTacos.addIngredient(new Ingredient("sugar",new BigDecimal("1.0"),teaspoon));
-        spicyGCTacos.addIngredient(new Ingredient("salt",new BigDecimal("0.5"),teaspoon));
-        spicyGCTacos.addIngredient(new Ingredient("clove garlic",new BigDecimal("1.0"),count));
-        spicyGCTacos.addIngredient(new Ingredient("orange zest",new BigDecimal("1.0"),tablespoon));
-        spicyGCTacos.addIngredient(new Ingredient("small tortillas",new BigDecimal("8.0"),count));
-        spicyGCTacos.addIngredient(new Ingredient("packed baby arugula",new BigDecimal("3.0"),ounce));
-        spicyGCTacos.addIngredient(new Ingredient("medium ripe avocado",new BigDecimal("2.0"),ounce));
-        spicyGCTacos.addIngredient(new Ingredient("radish thinly sliced",new BigDecimal("4.0"),count));
-        spicyGCTacos.addIngredient(new Ingredient("cherry tomato halved",new BigDecimal("0.5"),pint));
-        spicyGCTacos.addIngredient(new Ingredient("red onion",new BigDecimal("0.25"),count));
-        spicyGCTacos.addIngredient(new Ingredient("roughly chopped cilantro",BigDecimal.ZERO,count));
-        spicyGCTacos.addIngredient(new Ingredient("sour cream",new BigDecimal("0.5"),cup));
-        spicyGCTacos.addIngredient(new Ingredient("milk",new BigDecimal("0.25"),cup));
-        spicyGCTacos.addIngredient(new Ingredient("lime wedges",new BigDecimal("1.0"),count));
+        spicyGCTacos.addIngredient(new Ingredient("ancho chili powder",new BigDecimal("2.0"),uomS.get("Tablespoon")));
+        spicyGCTacos.addIngredient(new Ingredient("dired oregano",new BigDecimal("1.0"),uomS.get("Teaspoon")));
+        spicyGCTacos.addIngredient(new Ingredient("dired cumin",new BigDecimal("1.0"),uomS.get("Teaspoon")));
+        spicyGCTacos.addIngredient(new Ingredient("sugar",new BigDecimal("1.0"),uomS.get("Teaspoon")));
+        spicyGCTacos.addIngredient(new Ingredient("salt",new BigDecimal("0.5"),uomS.get("Teaspoon")));
+        spicyGCTacos.addIngredient(new Ingredient("clove garlic",new BigDecimal("1.0"),uomS.get("")));
+        spicyGCTacos.addIngredient(new Ingredient("orange zest",new BigDecimal("1.0"),uomS.get("Tablespoon")));
+        spicyGCTacos.addIngredient(new Ingredient("small tortillas",new BigDecimal("8.0"),uomS.get("")));
+        spicyGCTacos.addIngredient(new Ingredient("packed baby arugula",new BigDecimal("3.0"),uomS.get("Ounce")));
+        spicyGCTacos.addIngredient(new Ingredient("medium ripe avocado",new BigDecimal("2.0"),uomS.get("Ounce")));
+        spicyGCTacos.addIngredient(new Ingredient("radish thinly sliced",new BigDecimal("4.0"),uomS.get("")));
+        spicyGCTacos.addIngredient(new Ingredient("cherry tomato halved",new BigDecimal("0.5"),uomS.get("Pint")));
+        spicyGCTacos.addIngredient(new Ingredient("red onion",new BigDecimal("0.25"),uomS.get("")));
+        spicyGCTacos.addIngredient(new Ingredient("roughly chopped cilantro",BigDecimal.ZERO,uomS.get("")));
+        spicyGCTacos.addIngredient(new Ingredient("sour cream",new BigDecimal("0.5"),uomS.get("Cup")));
+        spicyGCTacos.addIngredient(new Ingredient("milk",new BigDecimal("0.25"),uomS.get("Cup")));
+        spicyGCTacos.addIngredient(new Ingredient("lime wedges",new BigDecimal("1.0"),uomS.get("")));
 
         return spicyGCTacos;
     }
 
-    @Transactional
     private void doDBInit() {
         initUOMs();
+        initCategory();
         recipeRepository.save(initGuacamole());
         recipeRepository.save(initSpicyGCTacos());
     }
@@ -154,7 +183,7 @@ public class BootStrapDataDefault implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         log.info("Started in Bootstrap");
-        //doDBInit();
+        doDBInit();
         log.info("Leaving Bootstrap");
 
     }

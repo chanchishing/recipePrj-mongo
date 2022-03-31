@@ -8,6 +8,7 @@ import guru.springframework.service.ImageService;
 import guru.springframework.service.RecipeService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -87,6 +88,8 @@ class ImageControllerTest {
                 .andExpect(model().attribute("exception",is(instanceOf(NotFoundException.class))));
     }
 
+    //Disable test as Id is String for MongoDB
+    @Disabled
     @Test
     public void getRecipeRecipeIdNotNumeric() throws Exception {
 
