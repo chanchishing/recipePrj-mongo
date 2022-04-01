@@ -11,9 +11,9 @@
 <body>
 <!--/*@thymesVar id="recipe" type="guru.springframework.model.Recipe"*/-->
 <div class="container-fluid" style="margin-top: 20px">
-    <form th:object="${ingredient}" th:action="@{'/recipe/'+ ${ingredient.getId()} +'/ingredient/'}"  method="post">
+    <form th:object="${ingredient}" th:action="@{'/recipe/'+ ${recipeId} +'/ingredient/'}"  method="post">
         <input type="hidden" th:field="*{id}"/>
-        <input type="hidden" th:field="*{recipeId}"--/>
+        <input type="hidden" th:field="*{recipeId}"/>
         <div class="col-sm-8 offset-sm-2">
             <div class="card">
                 <div class="card-header text-white bg-primary">

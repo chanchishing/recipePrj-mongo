@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -37,7 +38,10 @@ public class IngredientServiceImpl implements IngredientService{
 
         Ingredient ingredient=ingredientSet.stream().filter(element->element.getId().equals(ingredientId)).findFirst().get();
 
-        return ingredientToCommand.convert(ingredient);
+        IngredientCommand ingredientCommand=ingredientToCommand.convert(ingredient);
+        ingredientCommand.setRecipeId(recipeId);
+
+        return ingredientCommand;
     }
 
     @Transactional
@@ -78,21 +82,23 @@ public class IngredientServiceImpl implements IngredientService{
                     } catch (Exception e){
                         throw e;
                     }
+                    ingredientCommand.setId(UUID.randomUUID().toString());
                     recipe.addIngredient(commandToIngredient.convert(ingredientCommand));
                 }
         );
 
         Recipe savedRecipe=recipeRepository.save(recipe);
+        Ingredient savedIngredient = savedRecipe.getIngredients().stream().filter(
+                                        ingredient -> (
+                                                //ingredient.getRecipe().getId()==ingredientCommand.getRecipeId() &&
+                                                ingredient.getDescription().equals(ingredientCommand.getDescription()) &&
+                                                ingredient.getAmount()==ingredientCommand.getAmount() &&
+                                                ingredient.getUom().getId().equals(ingredientCommand.getUom().getId()))
+                                        ).findFirst().get();
 
-        return ingredientToCommand.convert(
-                savedRecipe.getIngredients().stream().filter(
-                        ingredient -> (
-                                        //ingredient.getRecipe().getId()==ingredientCommand.getRecipeId() &&
-                                        ingredient.getDescription()==ingredientCommand.getDescription() &&
-                                        ingredient.getAmount()==ingredientCommand.getAmount() &&
-                                        ingredient.getUom().getId()==ingredientCommand.getUom().getId()))
-                        .findFirst().get()
-                );
+        IngredientCommand savedIngredientCommand=ingredientToCommand.convert(savedIngredient);
+        savedIngredientCommand.setRecipeId(savedRecipe.getId());
+        return savedIngredientCommand;
     }
 
     @Transactional
