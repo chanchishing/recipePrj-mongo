@@ -39,7 +39,7 @@ class RecipeServiceImplIT {
 
 
     @Test
-    @Transactional
+    //@Transactional
     void saveRecipe() {
         List<Recipe> recipeList=recipeService.getRecipeList();
         Recipe tstRecipe=recipeList.get(0);
