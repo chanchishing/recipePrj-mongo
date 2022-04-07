@@ -5,8 +5,11 @@ import guru.springframework.model.*;
 import guru.springframework.repositories.CategoryRepository;
 import guru.springframework.repositories.RecipeRepository;
 import guru.springframework.repositories.UnitOfMeasureRepository;
+import guru.springframework.repositories.reactive.UnitOfMeasureReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +30,9 @@ public class BootStrapDataDefault implements CommandLineRunner {
     private final RecipeRepository recipeRepository;
     private final CategoryRepository categoryRepository;
     private final UnitOfMeasureRepository unitOfMeasureRepository;
+
+    @Autowired
+    UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
 
     Map<String, UnitOfMeasure >uomS = Map.ofEntries(
             entry("",new UnitOfMeasure()),
@@ -178,6 +184,8 @@ public class BootStrapDataDefault implements CommandLineRunner {
         initCategory();
         recipeRepository.save(initGuacamole());
         recipeRepository.save(initSpicyGCTacos());
+        log.error("### Play with Mongo reactive driver ###");
+        log.error("Count uom using reactive Mongo Driver:"+unitOfMeasureReactiveRepository.count().block().toString());
     }
 
     @Override
