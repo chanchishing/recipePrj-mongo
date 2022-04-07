@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
-@EqualsAndHashCode(exclude = {"recipe"})
+//@EqualsAndHashCode(exclude = {"recipe"})
 public class Ingredient {
 
     public Ingredient() {

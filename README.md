@@ -1,3 +1,4 @@
+[![CircleCI](https://circleci.com/gh/chanchishing/recipePrj-mongo/tree/master.svg?style=svg)](https://circleci.com/gh/chanchishing/recipePrj-mongo/tree/master)
 
 # recipePrj-Mongo
 This is the Recipe Project on MongoDB of the course that I code along when taking the Udmey course "Spring Framework 5: Beginner to Guru"
@@ -8,3 +9,5 @@ The course video was created in 2017-18, some of the software version used in th
 * OpenJDK 11
 * JUnit 5
 * Bootstrap 5
+* MongoDB 4
+* Gradle 7
