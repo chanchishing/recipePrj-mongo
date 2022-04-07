@@ -1,5 +1,6 @@
 [![CircleCI](https://circleci.com/gh/chanchishing/recipePrj-mongo/tree/master.svg?style=svg)](https://circleci.com/gh/chanchishing/recipePrj-mongo/tree/master)
 
+[![codecov](https://codecov.io/gh/chanchishing/recipePrj-mongo/branch/master/graph/badge.svg?token=73J75B3L6S)](https://codecov.io/gh/chanchishing/recipePrj-mongo)
 # recipePrj-Mongo
 This is the Recipe Project on MongoDB of the course that I code along when taking the Udmey course "Spring Framework 5: Beginner to Guru"
 
